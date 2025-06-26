@@ -3,7 +3,8 @@ import logo from '../../assets/olx_logo_2025.svg'
 import search from '../../assets/search1.svg'
 import arrow from '../../assets/arrow-down.svg'
 import searchWt from '../../assets/search.svg'
-const NavBar = () => {
+const NavBar = (props) => {
+    const {toggleModal} = props
   return (
     <div>
            <nav className="fixed z-50 w-full overflow-auto p-2 pl-3 pr-3 shadow-md bg-slate-100 border-b-4 border-solid border-b-white">
@@ -26,7 +27,9 @@ const NavBar = () => {
                     <img src={arrow} alt="" className='w-5 cursor-pointer' />
                 </div>
 
-                
+                <p onClick={toggleModal} >
+                    Login
+                </p>
       </nav>
       
     </div>
