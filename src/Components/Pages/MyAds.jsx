@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Navbar from '../Navbar/Navbar'
 import Login from '../Modal/Login'
 import Sell from '../Modal/Sell'
+import EditAd from '../Modal/EditAd' // Import the new EditAd component
 import { ItemsContext } from '../Context/Item'
 import { UserAuth } from '../Context/Auth'
 import { Link } from 'react-router-dom'
@@ -11,11 +12,14 @@ import { fireStore, fetchFromFirestore } from '../Firebase/Firebase'
 const MyAds = () => {
     const [openModal, setModal] = useState(false)
     const [openModalSell, setModalSell] = useState(false)
+    const [openEditModal, setEditModal] = useState(false) 
+    const [editItem, setEditItem] = useState(null) 
     const [userAds, setUserAds] = useState([])
     const [loading, setLoading] = useState(true)
 
     const toggleModal = () => setModal(!openModal)
     const toggleModalSell = () => setModalSell(!openModalSell)
+    const toggleEditModal = () => setEditModal(!openEditModal)
 
     const itemsCtx = ItemsContext()
     const auth = UserAuth()
@@ -44,6 +48,11 @@ const MyAds = () => {
                 alert('Failed to delete ad. Please try again.')
             }
         }
+    }
+
+    const handleEdit = (item) => {
+        setEditItem(item)
+        toggleEditModal()
     }
 
     if (!auth?.user) {
@@ -81,6 +90,13 @@ const MyAds = () => {
             <Navbar toggleModal={toggleModal} toggleModalSell={toggleModalSell} />
             <Login toggleModal={toggleModal} status={openModal} />
             <Sell setItems={itemsCtx?.setItems} toggleModalSell={toggleModalSell} status={openModalSell} />
+            
+            <EditAd 
+                setItems={itemsCtx?.setItems} 
+                toggleEditModal={toggleEditModal} 
+                status={openEditModal}
+                editItem={editItem}
+            />
 
             <div className='p-10 px-5 sm:px-15 md:px-30 lg:px-40 min-h-screen pt-32'>
                 <div className="flex justify-between items-center mb-6">
@@ -134,13 +150,28 @@ const MyAds = () => {
                                             <h1 style={{ color: '#002f34' }} className="font-bold text-xl">₹ {item.price}</h1>
                                             <p className="text-sm pt-2">{item.category}</p>
                                             <p className="pt-2">{item.title}</p>
-                                            <p className="text-xs text-gray-500 pt-1">{item.createAt}</p>
+                                            <p className="text-xs text-gray-500 pt-1">{item.createdAt}</p>
                                         </div>
                                     </div>
                                 </Link>
 
-                                {/* Action buttons */}
+                                
                                 <div className="absolute top-3 right-3 flex flex-col gap-2">
+                                    {/* Edit button */}
+                                    <button
+                                        onClick={(e) => {
+                                            e.preventDefault()
+                                            handleEdit(item)
+                                        }}
+                                        className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 transition-colors"
+                                        title="Edit Ad"
+                                    >
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                        </svg>
+                                    </button>
+                                    
+                                    {/* Delete button */}
                                     <button
                                         onClick={(e) => {
                                             e.preventDefault()
